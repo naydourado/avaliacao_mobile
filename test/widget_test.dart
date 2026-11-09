@@ -9,6 +9,49 @@ import 'package:sweets_by_isa/screens/tela_home.dart';
 import 'package:sweets_by_isa/screens/tela_login.dart';
 
 void main() {
+  test(
+    'Login mostra mensagem clara quando o servidor está indisponível',
+    () async {
+      final cliente = MockClient((request) async {
+        throw http.ClientException('Failed to fetch', request.url);
+      });
+      addTearDown(cliente.close);
+      final autenticacao = AutenticacaoService(cliente: cliente);
+      await expectLater(
+        autenticacao.entrar('cliente', 'senha-teste'),
+        throwsA(
+          isA<Exception>().having(
+            (erro) => erro.toString(),
+            'mensagem',
+            'Exception: Não foi possível conectar ao servidor. Tente novamente.',
+          ),
+        ),
+      );
+    },
+  );
+
+  test('Login mantém o aviso de senha incorreta recebido da API', () async {
+    final cliente = MockClient(
+      (_) async => http.Response(
+        '{"detail":"Usuário ou senha incorretos."}',
+        401,
+        headers: {'content-type': 'application/json; charset=utf-8'},
+      ),
+    );
+    addTearDown(cliente.close);
+    final autenticacao = AutenticacaoService(cliente: cliente);
+    await expectLater(
+      autenticacao.entrar('cliente', 'senha-errada'),
+      throwsA(
+        isA<Exception>().having(
+          (erro) => erro.toString(),
+          'mensagem',
+          'Exception: Usuário ou senha incorretos.',
+        ),
+      ),
+    );
+  });
+
   test('Login recebe perfil da API', () async {
     final cliente = MockClient((request) async {
       expect(request.url.path, '/login');
