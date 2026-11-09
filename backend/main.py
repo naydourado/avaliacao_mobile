@@ -87,7 +87,9 @@ def exigir_admin(x_admin_key: str | None = Header(default=None)):
     chave = os.getenv("ADMIN_KEY", "")
     if not chave:
         raise HTTPException(status_code=503, detail="Configure ADMIN_KEY no servidor.")
-    if x_admin_key is None or not secrets.compare_digest(x_admin_key, chave):
+    if x_admin_key is None or not secrets.compare_digest(
+        x_admin_key.encode('utf-8'), chave.encode('utf-8')
+    ):
         raise HTTPException(status_code=403, detail="Chave administrativa incorreta.")
 
 
@@ -127,13 +129,13 @@ def login(dados: LoginEntrada):
         chave = os.getenv("ADMIN_KEY", "")
         if not chave:
             raise HTTPException(status_code=503, detail="Configure ADMIN_KEY no servidor.")
-        if secrets.compare_digest(dados.senha, chave):
+        if secrets.compare_digest(dados.senha.encode('utf-8'), chave.encode('utf-8')):
             return {"usuario": "admin", "perfil": "ADMIN"}
     elif usuario == "cliente":
         senha_cliente = os.getenv("CLIENT_PASSWORD", "")
         if not senha_cliente:
             raise HTTPException(status_code=503, detail="Configure CLIENT_PASSWORD no servidor.")
-        if secrets.compare_digest(dados.senha, senha_cliente):
+        if secrets.compare_digest(dados.senha.encode('utf-8'), senha_cliente.encode('utf-8')):
             return {"usuario": "cliente", "perfil": "CLIENTE"}
     raise HTTPException(status_code=401, detail="Usuário ou senha incorretos.")
 

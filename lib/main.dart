@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'navigation/navbar.dart';
 import 'screens/tela_login.dart';
-import 'theme/app_colors.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,23 +37,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Sweets by Isa',
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: AppColors.fundo,
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.roxo),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.fundo,
-          foregroundColor: AppColors.roxo,
-          centerTitle: false,
-          elevation: 0,
-        ),
-        filledButtonTheme: FilledButtonThemeData(
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.roxo,
-            foregroundColor: Colors.white,
-          ),
-        ),
-      ),
+      theme: AppTheme.claro,
       home: perfil == null
           ? TelaLogin(onEntrar: entrar)
           : NavBar(perfil: perfil!, chaveAdmin: chaveAdmin, onSair: sair),

@@ -36,23 +36,31 @@ void main() {
 
   test('Converte pedido do JSON da API e mostra status', () {
     final pedido = Pedido.fromJson({
-      'id': 1, 'codigo': 'codigo-de-exemplo', 'nome_cliente': 'Ana',
-      'pagamento': 'PIX', 'observacoes': '', 'criado_em': '2026-10-28',
-      'status': 'PRONTO', 'total': 24,
-      'itens': [{'produto_nome': 'Brownie', 'quantidade': 2,
-        'preco_unitario': 12}],
+      'id': 1,
+      'codigo': 'codigo-de-exemplo',
+      'nome_cliente': 'Ana',
+      'pagamento': 'PIX',
+      'observacoes': '',
+      'criado_em': '2026-10-28',
+      'status': 'PRONTO',
+      'total': 24,
+      'itens': [
+        {'produto_nome': 'Brownie', 'quantidade': 2, 'preco_unitario': 12},
+      ],
     });
     expect(pedido.statusFormatado, 'Pronto para retirada');
     expect(pedido.totalFormatado, 'R\$ 24,00');
     expect(pedido.itens.length, 1);
   });
 
-  testWidgets('Login tem usuario e senha e valida campos vazios', (tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: TelaLogin(onEntrar: (_, __) {}),
-    ));
+  testWidgets('Login tem usuario e senha e valida campos vazios', (
+    tester,
+  ) async {
+    await tester.pumpWidget(MaterialApp(home: TelaLogin(onEntrar: (_, _) {})));
     expect(find.text('Usuário'), findsOneWidget);
     expect(find.text('Senha'), findsOneWidget);
+    await tester.ensureVisible(find.text('Entrar'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Entrar'));
     await tester.pump();
     expect(find.text('Preencha usuário e senha.'), findsOneWidget);
@@ -60,19 +68,26 @@ void main() {
 
   testWidgets('Mostra o cardapio sem depender de internet', (tester) async {
     final produtos = [
-      Produto(id: 1, nome: 'Brownie', categoria: 'Brownies', preco: 12,
-          imagem: 'assets/images/brownie.png'),
+      Produto(
+        id: 1,
+        nome: 'Brownie',
+        categoria: 'Brownies',
+        preco: 12,
+        imagem: 'assets/images/brownie.png',
+      ),
     ];
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: TelaHome(
-          produtos: produtos,
-          favoritos: <int>{},
-          onAdicionar: (_) {},
-          onFavorito: (_) {},
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: TelaHome(
+            produtos: produtos,
+            favoritos: <int>{},
+            onAdicionar: (_) {},
+            onFavorito: (_) {},
+          ),
         ),
       ),
-    ));
+    );
     expect(find.text('Nosso cardápio'), findsOneWidget);
     expect(find.text('Brownie'), findsOneWidget);
     expect(find.text('R\$ 12,00'), findsOneWidget);

@@ -8,7 +8,6 @@ class ProdutoCard extends StatelessWidget {
   final VoidCallback onAdicionar;
   final VoidCallback onFavorito;
   final bool mostrarFavorito;
-
   const ProdutoCard({
     super.key,
     required this.produto,
@@ -19,82 +18,100 @@ class ProdutoCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.branco,
-      clipBehavior: Clip.antiAlias,
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(
-                  produto.imagem,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Center(child: Icon(Icons.cookie, size: 55)),
+  Widget build(BuildContext context) => Card(
+    clipBehavior: Clip.antiAlias,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                produto.imagem,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => const ColoredBox(
+                  color: AppColors.lavanda,
+                  child: Icon(
+                    Icons.cookie_outlined,
+                    size: 48,
+                    color: AppColors.roxo,
+                  ),
                 ),
-                if (mostrarFavorito) Positioned(
-                  right: 6,
-                  top: 6,
-                  child: IconButton.filledTonal(
+              ),
+              if (mostrarFavorito)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: IconButton.filled(
                     tooltip: 'Favoritar',
-                    onPressed: onFavorito,
-                    icon: Icon(
-                      favorito ? Icons.favorite : Icons.favorite_border,
-                      color: AppColors.roxo,
-                      size: 20,
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppColors.roxo,
+                      minimumSize: const Size(44, 44),
                     ),
+                    onPressed: onFavorito,
+                    isSelected: favorito,
+                    selectedIcon: const Icon(Icons.favorite),
+                    icon: const Icon(Icons.favorite_border),
                   ),
                 ),
-              ],
-            ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 2),
-            child: Text(
-              produto.nome,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.texto,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              produto.precoFormatado,
-              style: const TextStyle(
-                color: AppColors.roxo,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(6, 3, 6, 7),
-            child: SizedBox(
-              width: double.infinity,
-              height: 36,
-              child: FilledButton(
-                onPressed: onAdicionar,
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                produto.categoria.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 10,
+                  letterSpacing: 1.1,
+                  color: AppColors.textoSuave,
+                  fontWeight: FontWeight.w600,
                 ),
-                child: const Text('Adicionar', style: TextStyle(fontSize: 12)),
               ),
-            ),
+              const SizedBox(height: 5),
+              Text(
+                produto.nome,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.2,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.texto,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                produto.precoFormatado,
+                style: const TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.roxo,
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: onAdicionar,
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: const Size(44, 44),
+                  ),
+                  child: const Text('Adicionar'),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

@@ -30,8 +30,13 @@ class Produto {
     if (categoria == 'Palhas italianas') {
       return PalhaItaliana(id: id, nome: nome, preco: preco, imagem: imagem);
     }
-    return Produto(id: id, nome: nome, categoria: categoria,
-      preco: preco, imagem: imagem);
+    return Produto(
+      id: id,
+      nome: nome,
+      categoria: categoria,
+      preco: preco,
+      imagem: imagem,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -52,22 +57,28 @@ class Produto {
 
 // Subclasses do mesmo modelo, sem acrescentar telas ou bibliotecas complexas.
 class Brownie extends Produto {
-  Brownie({required int id, required String nome,
-      required double preco, required String imagem})
-      : super(id: id, nome: nome, categoria: 'Brownies',
-          preco: preco, imagem: imagem);
+  Brownie({
+    required super.id,
+    required super.nome,
+    required super.preco,
+    required super.imagem,
+  }) : super(categoria: 'Brownies');
 }
 
 class Cookie extends Produto {
-  Cookie({required int id, required String nome,
-      required double preco, required String imagem})
-      : super(id: id, nome: nome, categoria: 'Cookies',
-          preco: preco, imagem: imagem);
+  Cookie({
+    required super.id,
+    required super.nome,
+    required super.preco,
+    required super.imagem,
+  }) : super(categoria: 'Cookies');
 }
 
 class PalhaItaliana extends Produto {
-  PalhaItaliana({required int id, required String nome,
-      required double preco, required String imagem})
-      : super(id: id, nome: nome, categoria: 'Palhas italianas',
-          preco: preco, imagem: imagem);
+  PalhaItaliana({
+    required super.id,
+    required super.nome,
+    required super.preco,
+    required super.imagem,
+  }) : super(categoria: 'Palhas italianas');
 }

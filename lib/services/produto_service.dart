@@ -21,12 +21,18 @@ class ProdutoService {
         .timeout(const Duration(seconds: 10));
     _verificarResposta(resposta);
     final dados = jsonDecode(utf8.decode(resposta.bodyBytes)) as List<dynamic>;
-    return dados.map((item) => Produto.fromJson(item as Map<String, dynamic>)).toList();
+    return dados
+        .map((item) => Produto.fromJson(item as Map<String, dynamic>))
+        .toList();
   }
 
   // POST - criar um produto (chave informada pela administradora)
-  Future<void> criarProduto(String nome, String categoria, double preco,
-      String chave) async {
+  Future<void> criarProduto(
+    String nome,
+    String categoria,
+    double preco,
+    String chave,
+  ) async {
     final resposta = await cliente
         .post(
           Uri.parse('$apiUrl/produtos'),
@@ -43,8 +49,13 @@ class ProdutoService {
   }
 
   // PUT - atualizar um produto existente
-  Future<void> editarProduto(Produto produto, String nome, String categoria,
-      double preco, String chave) async {
+  Future<void> editarProduto(
+    Produto produto,
+    String nome,
+    String categoria,
+    double preco,
+    String chave,
+  ) async {
     final resposta = await cliente
         .put(
           Uri.parse('$apiUrl/produtos/${produto.id}'),
@@ -63,18 +74,15 @@ class ProdutoService {
   // DELETE - excluir permanentemente um produto
   Future<void> excluirProduto(int id, String chave) async {
     final resposta = await cliente
-        .delete(
-          Uri.parse('$apiUrl/produtos/$id'),
-          headers: _cabecalhos(chave),
-        )
+        .delete(Uri.parse('$apiUrl/produtos/$id'), headers: _cabecalhos(chave))
         .timeout(const Duration(seconds: 10));
     _verificarResposta(resposta);
   }
 
   Map<String, String> _cabecalhos(String chave) => {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'X-Admin-Key': chave,
-      };
+    'Content-Type': 'application/json; charset=UTF-8',
+    'X-Admin-Key': chave,
+  };
 
   void _verificarResposta(http.Response resposta) {
     if (resposta.statusCode >= 200 && resposta.statusCode < 300) return;

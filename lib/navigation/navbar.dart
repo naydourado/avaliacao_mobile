@@ -18,9 +18,14 @@ class NavBar extends StatefulWidget {
   final ProdutoService? servicoProdutos;
   final PedidoService? servicoPedidos;
 
-  const NavBar({super.key, required this.perfil,
-      required this.chaveAdmin, required this.onSair,
-      this.servicoProdutos, this.servicoPedidos});
+  const NavBar({
+    super.key,
+    required this.perfil,
+    required this.chaveAdmin,
+    required this.onSair,
+    this.servicoProdutos,
+    this.servicoPedidos,
+  });
 
   @override
   State<NavBar> createState() => _NavBarState();
@@ -37,6 +42,10 @@ class _NavBarState extends State<NavBar> {
   List<Produto> produtos = [];
   bool carregando = true;
   String? erro;
+
+  // Mantém o histórico antigo do cliente e separa as compras da administradora.
+  String get chavePedidos =>
+      widget.perfil == 'ADMIN' ? 'pedidos_codigos_admin' : 'pedidos_codigos';
 
   @override
   void initState() {
@@ -80,7 +89,8 @@ class _NavBarState extends State<NavBar> {
   Future<void> salvarFavoritos() async {
     final preferencias = await SharedPreferences.getInstance();
     await preferencias.setStringList(
-      'favoritos', favoritos.map((id) => id.toString()).toList(),
+      'favoritos',
+      favoritos.map((id) => id.toString()).toList(),
     );
   }
 
@@ -129,10 +139,14 @@ class _NavBarState extends State<NavBar> {
         title: const Text('Sair da conta?'),
         content: const Text('Você voltará à tela de login.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar')),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Sair')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Sair'),
+          ),
         ],
       ),
     );
@@ -147,8 +161,10 @@ class _NavBarState extends State<NavBar> {
   }
 
   void abrirFeriados() {
-    Navigator.push(context, MaterialPageRoute(
-      builder: (context) => const TelaFeriados()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const TelaFeriados()),
+    );
   }
 
   @override
@@ -190,15 +206,28 @@ class _NavBarState extends State<NavBar> {
         onAdicionar: aumentarQuantidade,
         onRemover: diminuirQuantidade,
         pedidoService: pedidoService,
+        chavePedidos: chavePedidos,
         onPedidoFinalizado: pedidoFinalizado,
       ),
-      TelaPedidos(pedidoService: pedidoService),
+      TelaPedidos(pedidoService: pedidoService, chavePedidos: chavePedidos),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sweets by Isa', style: TextStyle(
-          fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Row(
+          children: [
+            Icon(Icons.cookie_outlined, color: AppColors.roxo, size: 28),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Sweets by Isa',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             onPressed: abrirFeriados,
@@ -220,49 +249,89 @@ class _NavBarState extends State<NavBar> {
       body: carregando
           ? const Center(child: CircularProgressIndicator())
           : erro != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.wifi_off, size: 48, color: AppColors.roxo),
-                        const SizedBox(height: 12),
-                        const Text('Não foi possível carregar o cardápio.'),
-                        const SizedBox(height: 8),
-                        Text(erro!, textAlign: TextAlign.center),
-                        const SizedBox(height: 12),
-                        FilledButton(
-                          onPressed: carregarProdutos,
-                          child: const Text('Tentar novamente'),
-                        ),
-                      ],
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.wifi_off, size: 48, color: AppColors.roxo),
+                    const SizedBox(height: 12),
+                    const Text('Não foi possível carregar o cardápio.'),
+                    const SizedBox(height: 8),
+                    Text(erro!, textAlign: TextAlign.center),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      onPressed: carregarProdutos,
+                      child: const Text('Tentar novamente'),
                     ),
+                  ],
+                ),
+              ),
+            )
+          : paginas[indexAtual],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: AppColors.borda)),
+        ),
+        child: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: BottomNavigationBar(
+              currentIndex: indexAtual,
+              onTap: mudarIndex,
+              type: BottomNavigationBarType.fixed,
+              elevation: 0,
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: const TextStyle(fontSize: 12),
+              backgroundColor: Colors.white,
+              selectedItemColor: AppColors.roxo,
+              unselectedItemColor: AppColors.textoSuave,
+              items: [
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  activeIcon: Icon(Icons.home),
+                  label: 'Cardápio',
+                ),
+                if (administrador)
+                  const BottomNavigationBarItem(
+                    icon: Icon(Icons.settings_outlined),
+                    activeIcon: Icon(Icons.settings),
+                    label: 'Admin',
+                  )
+                else
+                  const BottomNavigationBarItem(
+                    icon: Icon(Icons.favorite_border),
+                    activeIcon: Icon(Icons.favorite),
+                    label: 'Favoritos',
                   ),
-                )
-              : paginas[indexAtual],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: indexAtual,
-        onTap: mudarIndex,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: AppColors.roxo,
-        unselectedItemColor: Colors.grey.shade600,
-        items: [
-          const BottomNavigationBarItem(icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home), label: 'Cardápio'),
-          if (administrador)
-            const BottomNavigationBarItem(icon: Icon(Icons.settings_outlined),
-                activeIcon: Icon(Icons.settings), label: 'Admin')
-          else
-            const BottomNavigationBarItem(icon: Icon(Icons.favorite_border),
-                activeIcon: Icon(Icons.favorite), label: 'Favoritos'),
-          const BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined),
-              activeIcon: Icon(Icons.shopping_bag), label: 'Carrinho'),
-          BottomNavigationBarItem(icon: const Icon(Icons.receipt_long_outlined),
-              activeIcon: const Icon(Icons.receipt_long),
-              label: administrador ? 'Meus pedidos' : 'Pedidos'),
-        ],
+                BottomNavigationBarItem(
+                  icon: Badge(
+                    isLabelVisible: carrinho.isNotEmpty,
+                    backgroundColor: AppColors.amarelo,
+                    textColor: AppColors.roxo,
+                    label: Text(
+                      '${carrinho.values.fold<int>(0, (total, qtd) => total + qtd)}',
+                    ),
+                    child: const Icon(Icons.shopping_bag_outlined),
+                  ),
+                  activeIcon: const Icon(Icons.shopping_bag),
+                  label: 'Carrinho',
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.receipt_long_outlined),
+                  activeIcon: const Icon(Icons.receipt_long),
+                  label: administrador ? 'Meus pedidos' : 'Pedidos',
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

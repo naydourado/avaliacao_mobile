@@ -7,14 +7,16 @@ class AutenticacaoService {
   final http.Client cliente;
 
   AutenticacaoService({http.Client? cliente})
-      : cliente = cliente ?? http.Client();
+    : cliente = cliente ?? http.Client();
 
   Future<Usuario> entrar(String usuario, String senha) async {
-    final resposta = await cliente.post(
-      Uri.parse('${ProdutoService.apiUrl}/login'),
-      headers: {'Content-Type': 'application/json; charset=UTF-8'},
-      body: jsonEncode({'usuario': usuario, 'senha': senha}),
-    ).timeout(const Duration(seconds: 10));
+    final resposta = await cliente
+        .post(
+          Uri.parse('${ProdutoService.apiUrl}/login'),
+          headers: {'Content-Type': 'application/json; charset=UTF-8'},
+          body: jsonEncode({'usuario': usuario, 'senha': senha}),
+        )
+        .timeout(const Duration(seconds: 10));
 
     if (resposta.statusCode != 200) {
       var mensagem = 'Não foi possível fazer login.';

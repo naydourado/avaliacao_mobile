@@ -3,8 +3,11 @@ class ItemPedido {
   final int quantidade;
   final double precoUnitario;
 
-  ItemPedido({required this.nome, required this.quantidade,
-    required this.precoUnitario});
+  ItemPedido({
+    required this.nome,
+    required this.quantidade,
+    required this.precoUnitario,
+  });
 
   factory ItemPedido.fromJson(Map<String, dynamic> json) {
     return ItemPedido(
@@ -26,9 +29,17 @@ class Pedido {
   final double total;
   final List<ItemPedido> itens;
 
-  Pedido({required this.id, required this.codigo, required this.nomeCliente,
-    required this.pagamento, required this.status, required this.observacoes,
-    required this.criadoEm, required this.total, required this.itens});
+  Pedido({
+    required this.id,
+    required this.codigo,
+    required this.nomeCliente,
+    required this.pagamento,
+    required this.status,
+    required this.observacoes,
+    required this.criadoEm,
+    required this.total,
+    required this.itens,
+  });
 
   factory Pedido.fromJson(Map<String, dynamic> json) {
     return Pedido(
@@ -40,8 +51,9 @@ class Pedido {
       observacoes: json['observacoes'] as String,
       criadoEm: json['criado_em'] as String,
       total: (json['total'] as num).toDouble(),
-      itens: (json['itens'] as List).map((item) =>
-        ItemPedido.fromJson(item as Map<String, dynamic>)).toList(),
+      itens: (json['itens'] as List)
+          .map((item) => ItemPedido.fromJson(item as Map<String, dynamic>))
+          .toList(),
     );
   }
 
