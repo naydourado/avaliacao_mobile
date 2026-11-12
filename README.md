@@ -73,3 +73,4 @@ cd backend
 - As fotos são ilustrativas e podem ser trocadas na pasta `assets/images/`.
 
 O código foi organizado com base nos exemplos do [FlutterClass](https://github.com/naydourado/FlutterClass).
+
