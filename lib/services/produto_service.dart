@@ -8,7 +8,7 @@ class ProdutoService {
   // Endereco alternativo: flutter run --dart-define=API_URL=http://...
   static const String apiUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://127.0.0.1:8000',
+    defaultValue: 'http://10.109.72.20:8000',
   );
 
   final http.Client cliente;
